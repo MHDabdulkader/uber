@@ -1,6 +1,8 @@
 # Backend API documentation
 
-`/users/register`
+## `/users/register` endpoint
+### Description:
+Input full name(first, last name), email, and password for registration 
 ### HTTP method:
 `POST`
 
@@ -17,6 +19,23 @@ The request body should be json format; with included those field
     - `fullname`: objects
         - `firstname`
         -  `lastname`
+    - `email`
+    - `password`
+- `token` : jwt token
+
+## `/users/login` endpoint
+### Description:
+Input email, and password for sign in 
+### HTTP method:
+`POST`
+
+### Request body:
+The request body should be json format; with included those field
+- `email`: string
+- `password`: string
+
+### Response :
+- `users`: objects
     - `email`
     - `password`
 - `token` : jwt token
