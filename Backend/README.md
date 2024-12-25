@@ -39,3 +39,38 @@ The request body should be json format; with included those field
     - `email`
     - `password`
 - `token` : jwt token
+
+
+
+## `/users/profile` endpoint
+### Description:
+Showing profile information(-password) based on auth middleware.
+### HTTP method:
+`GET`
+
+### Request body:
+The request body should be json format; with included those field
+- `Authorization: Bearer <token>`
+
+### Response :
+- `users`: objects
+    - `fullname`: objects
+        - `firstname`
+        -  `lastname`
+    - `email`
+- `token` : jwt token
+
+
+## `/users/logout` endpoint
+### Description:
+Logout the current user and blacklist the token provided in cookies or header. 
+### HTTP method:
+`GET`
+
+### Request body:
+The request body should be json format; with included those field
+
+
+
+
+
