@@ -132,3 +132,55 @@ The request body should be json format; with included those field
         -   `capacity`
         -   `vehicleType`
 -   `token` : jwt token
+
+## `/captains/login` endpoint
+
+### Description:
+
+Input email, and password for sign in
+
+### HTTP method:
+
+`POST`
+
+### Request body:
+
+The request body should be json format; with included those field
+
+-   `email`: string
+-   `password`: string
+
+### Response :
+
+-   `users`: objects
+    -   `email`
+    -   `password`
+-   `token` : jwt token
+
+## `/captains/profile` endpoint
+
+### Description:
+
+Showing profile information(-password) based on auth middleware.
+
+### HTTP method:
+
+`GET`
+
+### Request body:
+
+The request body should be json format; with included those field
+
+-   `Authorization: Bearer <token>`
+
+## `/captains/logout` endpoint
+
+### Description:
+
+Logout the current user and blacklist the token provided in cookies or header.
+
+### HTTP method:
+
+`GET`
+
+
