@@ -11,6 +11,7 @@ const cookiesParser = require("cookie-parser")
 
 const conntionToDB = require("./db/db");
 const userRoutes = require("./routes/user.route");
+const captainRoutes = require("./routes/captain.route");
 conntionToDB();
 
 app.use(cors()); // define req port when product level. on cors();
@@ -25,5 +26,6 @@ app.get("/", (req, res)=>{
 })
 
 app.use('/users', userRoutes);
+app.use("/captains", captainRoutes);
 
 module.exports = app;

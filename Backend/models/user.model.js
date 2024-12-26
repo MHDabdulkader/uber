@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema({
     password:{
         type: String,
         required: true,
+        minlength:[6,"Last name at least 3 characters"],
         select: false // when finding user this password field is not passing.
     },
     // for track the driver location by cab booker.
