@@ -1,6 +1,9 @@
 import CustomDropdown from "@/components/items/CustomDropdown";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
+import { captainDataContext } from "@/context/CaptainContext";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const CaptainSignUp = () => {
     const [formData, setFormData] = useState({
@@ -13,6 +16,8 @@ const CaptainSignUp = () => {
         capacity: "",
         vehicleType: "",
     });
+
+    const [captainSignUpData, setCaptainSignUpData] = useState({});
 
     const colors = [
         "white",
@@ -27,6 +32,10 @@ const CaptainSignUp = () => {
 
     const vehicleTypes = ["car", "bike", "van", "truck"];
 
+    const navigate = useNavigate();
+    const { captain, setCaptain } = useContext(captainDataContext);
+
+    // handlers;
     const handleChange = (e) => {
         console.log(e.target.value);
         const { name, value } = e.target;
@@ -34,9 +43,37 @@ const CaptainSignUp = () => {
         setFormData((preValue) => ({ ...preValue, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(formData);
+        const newCaptain = {
+            fullname: {
+                firstname: formData.firstname,
+                lastname: formData.lastname
+            },
+            email: formData.email,
+            password: formData.password,
+            vehicle: {
+                color: formData.vehicleColor,
+                capacity: formData.capacity,
+                vehicleType: formData.vehicleType,
+                plate: formData.plate,
+            }
+        }
+
+        // connect db and axios
+        const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/register`, newCaptain);
+        console.log(response)
+        if (response.status === 200) {
+            const data = response.data;
+
+
+            setCaptain(data.captain);
+            localStorage.setItem('captain-token', data.token);
+
+            navigate('/captain-home')
+        }
+        console.log(response.status)
         setFormData({
             firstname: "",
             lastname: "",
@@ -132,82 +169,91 @@ const CaptainSignUp = () => {
                         Vehicles' details{" "}
                         <span className="text-red-600">*</span>
                     </h3>
-                    {/* colors */}
-                    <div className="space-x-1 space-y-1">
-                        <label className="text-md font-medium">
-                            Vehicle Color
-                        </label>
-                        <select
-                            value={formData.vehicleColor}
-                            name="vehicleColor"
-                            onChange={handleChange}
-                            className="bg-[#eee] text-primary-content w-full py-2 px-3 bg-slate-100 rounded-md focus:bg-slate-100 focus:outline-none focus:border-blue-200"
-                        >
-                            <option value="">Select colors</option>
-                            {colors.map((option) => (
-                                <option key={option} value={option}>
-                                    {option.charAt(0).toUpperCase() +
-                                        option.slice(1)}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
 
-                    <div className="space-x-1 space-y-1">
-                        <label className="text-md font-medium">
-                            Vehicle number plate
-                            <span className="text-red-600">*</span>
-                        </label>
-                        <div>
-                            <input
-                                type="text"
-                                name="plate"
-                                value={formData.plate}
+                    <div className="flex justify-between gap-2">
+                        {/* colors */}
+                        <div className="space-x-1 space-y-1 w-1/2">
+                            {/* <label className="text-md font-medium">
+                                Vehicle Color
+                            </label> */}
+                            <select
+                                value={formData.vehicleColor}
+                                name="vehicleColor"
                                 onChange={handleChange}
-                                className="bg-[#eee] text-primary-content border rounded-sm focus:bg-slate-100 focus:outline-none focus:border-blue-200 px-4 py-2 w-full text-md placeholder:text-sm"
-                                placeholder="number plate"
-                                required
-                            />
+                                className="bg-[#eee]  text-xs text-primary-content w-full py-2 px-3  rounded-md focus:bg-slate-100 focus:outline-none focus:border-blue-200"
+                            >
+                                <option value="" className="text-xs">Select colors</option>
+                                {colors.map((option) => (
+                                    <option key={option} value={option}>
+                                        {option.charAt(0).toUpperCase() +
+                                            option.slice(1)}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        {/* number plate */}
+                        <div className="space-x-1 space-y-1 w-1/2">
+                            {/* <label className="text-md font-medium">
+                                Vehicle number plate
+                                <span className="text-red-600">*</span>
+                            </label> */}
+                            <div>
+                                <input
+                                    type="text"
+                                    name="plate"
+                                    value={formData.plate}
+                                    onChange={handleChange}
+                                    className="bg-[#eee] placeholder:text-xs text-xs text-primary-content border rounded-sm focus:bg-slate-100 focus:outline-none focus:border-blue-200 px-4 py-2 w-full text-md "
+                                    placeholder="number plate"
+                                    required
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    <div className="space-x-1 space-y-1">
-                        <label className="text-md font-medium">
-                            Vehicle Type
-                        </label>
-                        <select
-                            value={formData.vehicleType}
-                            name="vehicleType"
-                            onChange={handleChange}
-                            className="bg-[#eee] text-primary-content w-full py-2 px-3 bg-slate-100 rounded-md focus:bg-slate-100 focus:outline-none focus:border-blue-200"
-                        >
-                            <option value="">Select Vehicle Type</option>
-                            {vehicleTypes.map((option) => (
-                                <option key={option} value={option} className="w-full">
-                                    {option.charAt(0).toUpperCase() +
-                                        option.slice(1)}
-                                </option>
-                            ))}
-                        </select>
+                    <div className="flex justify-between gap-2">
+                        {/* Vehicle capacity */}
+                        <div className="space-x-1 space-y-1 w-1/2">
+                            {/* <label className="text-md font-medium">
+                                Vehicle passenger captacity
+                                <span className="text-red-600">*</span>
+                            </label> */}
+                            <div>
+                                <input
+                                    type="text"
+                                    name="capacity"
+                                    value={formData.capacity}
+                                    onChange={handleChange}
+                                    className="bg-[#eee] text-xs text-primary-content border rounded-sm focus:bg-slate-100 focus:outline-none focus:border-blue-200 px-4 py-2 w-full text-md placeholder:text-xs"
+                                    placeholder="Vehicle capacity"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        {/* Vehicle type */}
+                        <div className="space-x-1 space-y-1 w-1/2">
+                            {/* <label className="text-md font-medium">
+                                Vehicle Type
+                            </label> */}
+                            <select
+                                value={formData.vehicleType}
+                                name="vehicleType"
+                                onChange={handleChange}
+                                className="bg-[#eee] text-xs text-primary-content w-full py-2 px-3  rounded-md focus:bg-slate-100 focus:outline-none focus:border-blue-200"
+                            >
+                                <option value="" className="text-xs">Select Vehicle Type</option>
+                                {vehicleTypes.map((option) => (
+                                    <option key={option} value={option} className="w-full">
+                                        {option.charAt(0).toUpperCase() +
+                                            option.slice(1)}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        
                     </div>
 
-                    <div className="space-x-1 space-y-1">
-                        <label className="text-md font-medium">
-                            Vehicle passenger captacity
-                            <span className="text-red-600">*</span>
-                        </label>
-                        <div>
-                            <input
-                                type="text"
-                                name="capacity"
-                                value={formData.capacity}
-                                onChange={handleChange}
-                                className="bg-[#eee] text-primary-content border rounded-sm focus:bg-slate-100 focus:outline-none focus:border-blue-200 px-4 py-2 w-full text-md placeholder:text-sm"
-                                placeholder="Vehicle capacity"
-                                required
-                            />
-                        </div>
-                    </div>
 
                     <button className="py-2 w-full rounded-md bg-orange-500 text-gray-800 text-lg font-semibold">
                         Sign Up
@@ -216,7 +262,7 @@ const CaptainSignUp = () => {
 
                 <p className="flex justify-center mb-2">
                     Already have account?
-                    <Link to="/signin" className="text-blue-600">
+                    <Link to="/captain-login" className="text-blue-600">
                         Sign in{" "}
                     </Link>{" "}
                 </p>

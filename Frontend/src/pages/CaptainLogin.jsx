@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import { captainDataContext } from '@/context/CaptainContext';
+import axios from 'axios';
+import React, { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-
+import { useNavigate } from 'react-router-dom';
 const CaptainLogin = () => {
 
   const [email, setEmail] = useState("");
@@ -10,14 +12,27 @@ const CaptainLogin = () => {
     useEffect( ()=>{
       console.log("Captain sing" ,CaptainSignInData)
     },[CaptainSignInData])
-  
-    const handleCaptainSignInSubmit = (e) =>{
+    
+    const navigate = useNavigate();
+    const {captain, setCaptain} = useContext(captainDataContext);
+
+
+    const handleCaptainSignInSubmit = async (e) =>{
       e.preventDefault();
-      
-      setCaptainSignInData({
+      const captainSign = {
         email: email,
         password: password
-      })
+      }
+      console.log(captainSign);
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/login`, captainSign);
+      
+      if(response.status === 200){
+        const data = response.data;
+        setCaptain(data.captain);
+        localStorage.setItem("captain-token", data.token);
+
+        navigate("/captain-home")
+      }
       // console.log(userSignInData)
       setEmail("");
       setPassword("")
@@ -42,7 +57,7 @@ const CaptainLogin = () => {
             onChange={(e)=>{setEmail(e.target.value)}}
 
 
-            className='bg-[#eee] border rounded-sm focus:bg-slate-100 focus:outline-none focus:border-blue-200 px-4 py-2 w-full text-md placeholder:text-sm'
+            className='bg-[#eee] text-primary-content  border rounded-sm focus:bg-slate-100 focus:outline-none focus:border-blue-200 px-4 py-2 w-full text-md placeholder:text-sm'
             placeholder='example@gmail.com'
             required />
           <h3 className='text-lg font-medium'>Password <span className='text-red-600'>*</span></h3>
@@ -50,7 +65,7 @@ const CaptainLogin = () => {
 
             value={password}
             onChange={(e)=>{setPassword(e.target.value)}}
-            className='bg-[#eeee] border rounded-sm focus:bg-red-100 focus:outline-none focus:border-red-200 px-4 py-2 w-full text-md placeholder:text-sm'
+            className='bg-[#eeee] text-primary-content  border rounded-sm focus:bg-red-100 focus:outline-none focus:border-red-200 px-4 py-2 w-full text-md placeholder:text-sm'
             type='password'
             placeholder='Password'
             required />

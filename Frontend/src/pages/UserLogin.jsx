@@ -1,23 +1,50 @@
-import React, { useEffect, useState } from 'react'
+import { UserDataContext } from '@/context/UserContext';
+import axios from 'axios';
+import React, { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-const UserLogin = () => {
+// navigator for change the route after sign in
+// context set information for sign user. 
+// axios for run browser and nodejs in a codespace. its a promise based HTTP client.
 
+import { useNavigate } from 'react-router-dom';
+
+
+const UserLogin = () => {
+  // data
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userSignInData, setUserSignInData] = useState({});
+
+  // navigator
+  const navigator = useNavigate();
+
+  // set data on context
+  const {user, setUser} = useContext(UserDataContext);
 
   useEffect( ()=>{
     console.log("User sing" ,userSignInData)
   },[userSignInData])
 
-  const handleUserSignInSubmit = (e) =>{
+  const handleUserSignInSubmit = async (e) =>{
     e.preventDefault();
     
-    setUserSignInData({
+    const signUser = {
       email: email,
       password: password
-    })
+    }
+    
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`,signUser);
+
+    if(response.status === 200){
+      const data = response.data
+
+      setUser(data.user);
+      localStorage.setItem('token', data.token);
+      navigator("/user-home")
+    }
+    
+
     // console.log(userSignInData)
     setEmail("");
     setPassword("")
@@ -29,7 +56,7 @@ const UserLogin = () => {
       <div className='flex flex-col space-y-3'>
         <img
           className='w-14 mb-2'
-          src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Uber_logo_2018.png/800px-Uber_logo_2018.png' alt='uber logo' />
+          src='https://helios-i.mashable.com/imagery/articles/03y6VwlrZqnsuvnwR8CtGAL/hero-image.fill.size_1200x675.v1623372852.jpg' alt='uber logo' />
 
         <h1 className='flex justify-center font-bold text-2xl mt-2 '>Sign In</h1>
         <form onSubmit={(e)=>{
@@ -42,7 +69,8 @@ const UserLogin = () => {
             onChange={(e)=>{setEmail(e.target.value)}}
 
 
-            className='bg-[#eee] border rounded-sm focus:bg-slate-100 focus:outline-none focus:border-blue-200 px-4 py-2 w-full text-md placeholder:text-sm'
+            className='bg-[#eee] text-primary-content border rounded-sm focus:bg-slate-100 focus:outline-none focus:border-blue-200 
+            selection:bg-blue-200  px-4 py-2 w-full text-md placeholder:text-sm'
             placeholder='example@gmail.com'
             required />
           <h3 className='text-lg font-medium'>Password <span className='text-red-600'>*</span></h3>
@@ -50,7 +78,7 @@ const UserLogin = () => {
 
             value={password}
             onChange={(e)=>{setPassword(e.target.value)}}
-            className='bg-[#eeee] border rounded-sm focus:bg-red-100 focus:outline-none focus:border-red-200 px-4 py-2 w-full text-md placeholder:text-sm'
+            className='bg-[#eeee] text-primary-content border rounded-sm focus:bg-red-100 focus:outline-none focus:border-red-200 px-4 py-2 w-full text-md placeholder:text-sm'
             type='password'
             placeholder='Password'
             required />
